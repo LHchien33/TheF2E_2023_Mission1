@@ -23,4 +23,8 @@ module.exports = {
       '@vitejs/plugin-vue',
     ],
   },
+  rules: {
+    'linebreak-style': ['off', 'windows'],
+    'max-len': ['off'],
+  },
 };

@@ -1,0 +1,46 @@
+$utilities: map-merge(
+  $utilities, (
+    "color": map-merge(
+      map-get($utilities, "color"),
+      ( responsive: true ),
+    ),
+    "font-size": map-merge(
+      map-get($utilities, "font-size"),
+      ( responsive: true ),
+    ),
+    "font-weight": map-merge(
+      map-get($utilities, "font-weight"),
+      ( responsive: true ),
+    ),
+    "border-width": map-merge(
+      map-get($utilities, "border-width"),
+      ( responsive: true ),
+    ),
+    "link-offset": map-merge(
+      map-get($utilities, "link-offset"),
+      (
+        values: map-merge(
+          map-get(map-get($utilities, "link-offset"), "values"),
+          (10: 10px),
+        ),
+      ),
+    ),
+    "rounded": map-merge(
+      map-get($utilities, "rounded"),
+      (
+        values: map-merge(
+          map-get(map-get($utilities, "rounded"), "values"),
+          (80: 80px),
+        ),
+      ),
+    ),
+    "rounded-ts-be": (
+      property: border-top-left-radius border-bottom-right-radius,
+      class: rounded-ts-be,
+      values: map-merge(
+        map-get(map-get($utilities, "rounded"), "values"),
+        (80: 80px),
+      ),
+    ),
+  )
+);

@@ -21,6 +21,7 @@
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-vue": "^9.17.0",
     "sass": "^1.69.5",
-    "vite": "^4.4.11"
+    "vite": "^4.4.11",
+    "vite-svg-loader": "^4.0.0"
   }
 }
