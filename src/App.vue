@@ -1,11 +1,11 @@
 <template>
   <div class="border border-4 border-top-0 border-primary">
-    <HeaderComponent class="sticky-top bo"></HeaderComponent>
-    <BannerView></BannerView>
-    <ActivityView></ActivityView>
-    <PolicyView></PolicyView>
+    <HeaderComponent class="sticky-top"></HeaderComponent>
+    <BannerView id="候選人主張"></BannerView>
+    <ActivityView id="最新活動"></ActivityView>
+    <PolicyView id="政策議題"></PolicyView>
     <FundView></FundView>
-    <ServiceView></ServiceView>
+    <ServiceView id="民眾服務信箱"></ServiceView>
     <FooterComponent></FooterComponent>
   </div>
 </template>

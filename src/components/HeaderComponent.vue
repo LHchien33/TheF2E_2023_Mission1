@@ -22,13 +22,13 @@
             <ul class="list-unstyled mb-0 d-xl-flex">
               <template v-for="(item, idx) in navItems" :key="item">
                 <li v-if="idx !== navItems.length - 1" class="text-end">
-                  <a href="#"
+                  <a :href="`#${item}`"
                     class="text-white text-xl-dark px-xl-8 d-inline-block fw-bold fs-5 link-underline link-underline-opacity-0 link-underline-opacity-100-hover link-underline-primary link-offset-10"
                     :class="idx === 0 ? ['pb-4', 'py-xl-4'] : 'py-4'">{{ item }}</a>
                 </li>
-                <li v-else class="d-flex my-auto justify-content-end mt-4">
+                <li v-else class="d-flex my-auto justify-content-end mt-4 mt-xl-0">
                   <ButtonComponent v-bind="{
-                    btnTarget: '#',
+                    btnTarget: '#小額捐款',
                     btnColor: fundBtnColor,
                     btnSize: 'lg',
                     iconShow: true,

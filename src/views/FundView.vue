@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-image">
+  <div class="bg-image" id="小額捐款">
     <div class="container py-50">
       <div class="row">
         <div class="col-lg-8 col-xl-7">
