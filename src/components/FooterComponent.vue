@@ -4,7 +4,7 @@
       <div class="position-absolute bottom-100 img-custom">
         <img class="w-100" src="../assets/images/footer_cat.png" alt="頁尾貓咪">
       </div>
-      <div class="row gy-8 mb-7 align-items-center justify-content-around">
+      <div class="row gy-8 mb-7 align-items-center justify-content-around position-relative z-1">
         <div class="d-none d-lg-block col-lg-5">
           <a href="#">
             <Logo viewBox="0 0 236 59" fill="var(--bs-light)"></Logo>
@@ -12,16 +12,16 @@
         </div>
         <div class="col-sm-6 col-lg-3 align-self-start">
           <h5 class="fs-9 mb-3 text-warning text-center">Menu</h5>
-          <div class="d-flex">
+          <div class="d-flex" @click.prevent="scrollHandler">
             <div class="text-center w-50">
               <a href="#" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">首頁</a>
-              <a href="#" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">最新活動</a>
-              <a href="#" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">民眾服務信箱</a>
+              <a href="#最新活動" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">最新活動</a>
+              <a href="#民眾服務信箱" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">民眾服務信箱</a>
             </div>
             <div class="text-center w-50">
-              <a href="#" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">候選人主張</a>
-              <a href="#" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">政策議題</a>
-              <a href="#" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">小額捐款</a>
+              <a href="#候選人主張" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">候選人主張</a>
+              <a href="#政策議題" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">政策議題</a>
+              <a href="#小額捐款" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">小額捐款</a>
             </div>
           </div>
         </div>
@@ -41,6 +41,19 @@
 
 <script setup>
 import Logo from '@/assets/images/logo.svg';
+
+function scrollHandler(e) {
+  const destination = e.target.innerText;
+  let offsetTop = 0;
+
+  if (destination !== '首頁') {
+    offsetTop = document.getElementById(destination)?.offsetTop || 0;
+  }
+
+  window.scrollTo({
+    top: offsetTop - 100,
+  });
+}
 </script>
 
 <style scoped>

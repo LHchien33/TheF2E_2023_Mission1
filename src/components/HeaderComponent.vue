@@ -19,7 +19,7 @@
               aria-label="Close"></button>
           </div>
           <nav class="offcanvas-body px-5 px-xl-0 py-0">
-            <ul class="list-unstyled mb-0 d-xl-flex">
+            <ul class="list-unstyled mb-0 d-xl-flex" @click.prevent="scrollHandler">
               <template v-for="(item, idx) in navItems" :key="item">
                 <li v-if="idx !== navItems.length - 1" class="text-end">
                   <a :href="`#${item}`"
@@ -27,14 +27,9 @@
                     :class="idx === 0 ? ['pb-4', 'py-xl-4'] : 'py-4'">{{ item }}</a>
                 </li>
                 <li v-else class="d-flex my-auto justify-content-end mt-4 mt-xl-0">
-                  <ButtonComponent v-bind="{
-                    btnTarget: '#小額捐款',
-                    btnColor: fundBtnColor,
-                    btnSize: 'lg',
-                    iconShow: true,
-                    iconSize: 30,
-                    fontSize: 'fs-5',
-                  }" class="ms-xl-8">小額捐款</ButtonComponent>
+                  <ButtonComponent
+                    v-bind="{ btnTarget: '#小額捐款', btnColor: fundBtnColor, btnSize: 'lg', iconShow: true, iconSize: 30, fontSize: 'fs-5' }"
+                    class="ms-xl-8">小額捐款</ButtonComponent>
                 </li>
               </template>
             </ul>
@@ -70,6 +65,22 @@ onMounted(() => {
     fundBtnColor.value = 'primary';
   });
 });
+
+function scrollHandler(e) {
+  let { target } = e;
+
+  while (target && target.tagName !== 'A') {
+    target = target.parentNode;
+  }
+
+  if (target && target.tagName === 'A') {
+    const destination = target.getAttribute('href');
+    const offsetTop = document.querySelector(destination)?.offsetTop || 0;
+    window.scrollTo({
+      top: offsetTop - 100,
+    });
+  }
+}
 </script>
 
 <style scoped>

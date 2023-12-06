@@ -10,21 +10,19 @@
         </p>
       </div>
       <div class="col-lg-5">
-        <form class="w-75 mx-auto text-center">
+        <form class="w-75 mx-auto text-center" ref="form" @submit.prevent="submitHandler">
           <div class="mb-3 mb-md-7 mt-7">
-            <input type="text" class="form-control form-control-lg shadow-sm bg-light" id="exampleFormControlInput1"
-              placeholder="您的姓名" />
+            <input type="text" name="name" class="form-control form-control-lg shadow-sm bg-light" placeholder="您的姓名" />
           </div>
           <div class="mb-3 mb-md-7">
-            <input type="email" class="form-control form-control-lg shadow-sm bg-light" id="exampleFormControlInput1"
+            <input type="email" name="email" class="form-control form-control-lg shadow-sm bg-light"
               placeholder="您的 Email" />
           </div>
           <div class="mb-3 mb-md-7">
-            <input type="text" class="form-control form-control-lg shadow-sm bg-light" id="exampleFormControlInput1"
-              placeholder="您的手機" />
+            <input type="text" name="phone" class="form-control form-control-lg shadow-sm bg-light" placeholder="您的手機" />
           </div>
           <div class="mb-3 mb-md-7">
-            <textarea class="form-control form-control-lg shadow-sm bg-light" id="exampleFormControlTextarea1" rows="3"
+            <textarea name="suggestion" class="form-control form-control-lg shadow-sm bg-light" rows="3"
               placeholder="您的建言"></textarea>
           </div>
           <button type="submit" class="btn btn-primary border-primary border-3 fw-bold rounded-pill shadow-none text-nowrap fs-5 fs-xl-3 px-9 py-5 py-xl-7">送出建議</button>
@@ -36,6 +34,20 @@
 
 <script setup>
 import SectionTitle from '@/assets/images/title_service.svg';
+
+const emit = defineEmits(['showModal']);
+function submitHandler(e) {
+  const formData = new FormData(e.target);
+  const inputObject = Object.fromEntries(formData);
+  const hasBlank = Object.values(inputObject).includes('');
+
+  if (hasBlank) {
+    alert('請確認欄位皆已填寫 ><');
+    return;
+  }
+
+  emit('showModal', 'service', {});
+}
 </script>
 
 <style scoped>
