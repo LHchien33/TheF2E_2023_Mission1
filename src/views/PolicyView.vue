@@ -5,14 +5,14 @@
       <div class="row gy-7" ref="policyCardRow">
         <div class="col-lg-4" v-for="(card, idx) in policyCardData" :key="card.num">
           <div class="bg-light p-5 rounded-3 vstack h-100 card-max-height" :class="idx % 2 ? 'mt-lg-9' : 'mb-lg-9'"
-            @mouseenter="cardHoverToggle" @mouseleave="cardHoverToggle" @touchend.prevent>
-            <Transition name="fade" @after-enter="setLineClamp(`ol${idx + 1}`)" @after-leave="setLineClamp(`ol${idx + 1}`)">
-              <div v-if="hide !== `ol${idx + 1}`"
+            @mouseenter="cardHoverToggle" @mouseleave="cardHoverToggle">
+            <Transition name="fade" @after-enter="setLineClamp(allOlList[idx])" @after-leave="setLineClamp(allOlList[idx])">
+              <div v-if="hide !== allOlList[idx]"
                 class="badge fw-medium text-light bg-secondary rounded-ts-be-3 me-auto py-1 px-2 mb-2">政策{{ card.num }}
               </div>
             </Transition>
             <h3 class="fs-5 fs-lg-4 fw-bold mb-3">{{ card.title }}</h3>
-            <ol class="ps-7 fs-8 fs-xl-7 fw-medium flex-grow-1 line-clamp" :id="`ol${idx + 1}`">
+            <ol class="ps-7 fs-8 fs-xl-7 fw-medium flex-grow-1 line-clamp" :ref="(el) => allOlList.push(el)">
               <li v-for="(item, itemIdx) in card.list" :key="item[0] + itemIdx">{{ item }}</li>
             </ol>
           </div>
@@ -26,8 +26,8 @@
 import SectionTitle from '@/assets/images/title_policy.svg';
 import { ref, onMounted, nextTick } from 'vue';
 
-async function setLineClamp(id) {
-  const node = document.getElementById(id);
+async function setLineClamp(el) {
+  const node = el;
   // init first
   node.style.webkitLineClamp = 'unset';
   node.style.marginBottom = '0px';
@@ -42,24 +42,36 @@ async function setLineClamp(id) {
   node.style.marginBottom = `${clientHeight - viewH}px`;
 }
 
+const policyCardRow = ref(null);
 const hide = ref('');
 function cardHoverToggle(e) {
+  if (policyCardRow.value.clientWidth < 960) {
+    return;
+  }
+
   const card = e.target;
   const targetOl = card.querySelector('.line-clamp');
-  hide.value = hide.value ? '' : targetOl.id;
+  hide.value = hide.value ? '' : targetOl;
 }
 
+const allOlList = ref([]);
 function allLineClampSet() {
-  const olList = document.querySelectorAll('.line-clamp');
-  olList.forEach((ol) => setLineClamp(ol.id));
+  allOlList.value.forEach((ol) => setLineClamp(ol));
 }
 
-const policyCardRow = ref(null);
-const policyRowWidthObserver = new ResizeObserver((entries) => {
+function throttle(f, delay = 500) {
+  let timer = null;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => f.apply(this, args), delay);
+  };
+}
+
+const policyRowWidthObserver = new ResizeObserver(throttle((entries) => {
   if (entries[0].contentRect.width >= 960) {
     allLineClampSet();
   }
-});
+}));
 
 onMounted(() => {
   policyRowWidthObserver.observe(policyCardRow.value);
@@ -98,9 +110,15 @@ const policyCardData = [
 }
 
 .line-clamp {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block;
+}
+
+@media (min-width: 992px){
+  .line-clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 .fade-enter-active,
