@@ -53,16 +53,13 @@ onMounted(() => {
 });
 
 function showModal(from, data) {
-  let amount;
-  // eslint-disable-next-line default-case
   switch (from) {
     case 'fund':
-      amount = data.amount.replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, '$&,');
       modalData.value = {
         from,
         title: `成為${data.title}`,
         content: `<p class="text-primary fs-3 fw-bolder mb-n1">捐款金額</p>
-        <p class="text-primary fs-3 fw-bolder mb-8">NT$${amount}</p>`,
+        <p class="text-primary fs-3 fw-bolder mb-8">NT$${data.amount}</p>`,
       };
       break;
     case 'service':
@@ -78,16 +75,17 @@ function showModal(from, data) {
 </script>
 
 <style>
-.section-title-height {
+.section-title {
   height: 35px;
+  max-width: 100%;
 }
 @media (min-width: 992px) {
-  .section-title-height {
+  .section-title {
     height: 50px;
   }
 }
 @media (min-width: 1200px) {
-  .section-title-height {
+  .section-title {
     height: 72px;
   }
 }

@@ -21,15 +21,15 @@
           <nav class="offcanvas-body px-5 px-xl-0 py-0">
             <ul class="list-unstyled mb-0 d-xl-flex" @click.prevent="scrollHandler">
               <template v-for="(item, idx) in navItems" :key="item">
-                <li v-if="idx !== navItems.length - 1" class="text-end">
+                <li v-if="idx !== navItems.length - 1 && item !== '首頁'" class="text-end">
                   <a :href="`#${item}`"
                     class="text-white text-xl-dark px-xl-8 d-inline-block fw-bold fs-5 link-underline link-underline-opacity-0 link-underline-opacity-100-hover link-underline-primary link-offset-10"
                     :class="idx === 0 ? ['pb-4', 'py-xl-4'] : 'py-4'">{{ item }}</a>
                 </li>
-                <li v-else class="d-flex my-auto justify-content-end mt-4 mt-xl-0">
+                <li v-else-if="item === '小額捐款'" class="d-flex my-auto justify-content-end mt-4 mt-xl-0">
                   <ButtonComponent
-                    v-bind="{ btnTarget: '#小額捐款', btnColor: fundBtnColor, btnSize: 'lg', iconShow: true, iconSize: 30, fontSize: 'fs-5' }"
-                    class="ms-xl-8">小額捐款</ButtonComponent>
+                    v-bind="{ btnTarget: `#${item}`, btnColor: fundBtnColor, btnSize: 'lg', iconShow: true, iconSize: 30, fontSize: 'fs-5' }"
+                    class="ms-xl-8">{{ item }}</ButtonComponent>
                 </li>
               </template>
             </ul>
@@ -41,18 +41,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import ButtonComponent from '@/components/ButtonComponent.vue';
 import IconHamburgerMenu from '@/assets/images/icon_hamburgerMenu.svg';
 import Logo from '@/assets/images/logo.svg';
+import { useCommonStore } from '@/stores/common';
 
-const navItems = [
-  '候選人主張',
-  '最新活動',
-  '政策議題',
-  '民眾服務信箱',
-  '小額捐款',
-];
+const store = useCommonStore();
+const navItems = computed(() => store.navItems);
 
 const offcanvasRight = ref(null);
 const fundBtnColor = ref('primary');

@@ -12,18 +12,11 @@
         </div>
         <div class="col-sm-6 col-lg-3 align-self-start">
           <h5 class="fs-9 mb-3 text-warning text-center">Menu</h5>
-          <div class="d-flex" @click.prevent="scrollHandler">
-            <div class="text-center w-50">
-              <a href="#" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">首頁</a>
-              <a href="#最新活動" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">最新活動</a>
-              <a href="#民眾服務信箱" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">民眾服務信箱</a>
-            </div>
-            <div class="text-center w-50">
-              <a href="#候選人主張" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">候選人主張</a>
-              <a href="#政策議題" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">政策議題</a>
-              <a href="#小額捐款" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">小額捐款</a>
-            </div>
-          </div>
+          <ul class="row row-cols-2 list-unstyled text-center"  @click.prevent="scrollHandler">
+            <li class="col" v-for="item in navItems" :key="item">
+              <a :href="item === '首頁' ? '#' : `#${item}`" class="link-light d-block link-underline-opacity-0 link-underline-opacity-100-hover">{{ item }}</a>
+            </li>
+          </ul>
         </div>
         <div class="col-sm-6 col-lg-4 vstack align-items-center">
           <h5 class="fs-9 mb-3 text-warning">Office information</h5>
@@ -41,6 +34,11 @@
 
 <script setup>
 import Logo from '@/assets/images/logo.svg';
+import { computed } from 'vue';
+import { useCommonStore } from '@/stores/common';
+
+const store = useCommonStore();
+const navItems = computed(() => store.navItems);
 
 function scrollHandler(e) {
   const destination = e.target.innerText;

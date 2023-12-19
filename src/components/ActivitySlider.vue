@@ -38,13 +38,17 @@
 
 <script setup>
 import * as swiper from 'swiper/element/bundle';
-import { ref, onMounted, nextTick } from 'vue';
+import {
+  ref, onMounted, nextTick, computed,
+} from 'vue';
+import { useCommonStore } from '@/stores/common';
 
 swiper.register();
 
+const store = useCommonStore();
+const { getImgUrl, getDate, throttle } = store;
+const cardData = computed(() => store.cardsData);
 const contentArray = ref([]);
-const props = defineProps(['cardData']);
-const cardData = JSON.parse(JSON.stringify(props.cardData));
 
 async function setLineClamp(el) {
   const node = el;
@@ -60,33 +64,6 @@ async function setLineClamp(el) {
   const viewH = node.clientHeight - node.childNodes[0].clientHeight - padding * 2;
   const maxLines = Math.floor(viewH / lineHeight);
   node.childNodes[1].style.webkitLineClamp = `${maxLines}`;
-}
-
-function getImgUrl(image) {
-  return new URL(image, import.meta.url);
-}
-
-function getDate(timestamp, format = 'part') {
-  const time = new Date(timestamp * 1000);
-  const timeValues = [
-    time.getFullYear(),
-    time.getMonth() + 1,
-    time.getDate(),
-  ];
-
-  if (format === 'part') {
-    return time.toDateString().split(' ').slice(1, 3);
-  }
-
-  return timeValues.join('.');
-}
-
-function throttle(f, delay = 500) {
-  let timer = null;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => f.apply(this, args), delay);
-  };
 }
 
 const swiperContainer = ref();

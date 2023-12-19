@@ -2,7 +2,7 @@
   <div class="container section-padding">
     <div class="row">
       <div class="col-lg-7 text-center">
-        <SectionTitle class="d-block mx-auto w-100 section-title-height mb-7" fill="var(--bs-dark)" viewBox="0 0 356 58">
+        <SectionTitle class="d-block mx-auto section-title mb-7" fill="var(--bs-dark)" viewBox="0 0 356 58">
         </SectionTitle>
         <p class="fs-5 fs-lg-4 fw-bold mb-3">您的聲音，我們的行動！</p>
         <p class="fs-8 fs-lg-4 fw-medium fw-lg-bold mb-0 mx-auto" style="width: 70%">

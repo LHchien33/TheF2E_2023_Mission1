@@ -6,7 +6,7 @@
           <div class="bg-light rounded-80 p-9 d-flex" style="min-height: 465px">
             <div v-if="!fundFormShow && modalHidden" class="text-center my-auto">
               <SectionTitle
-                class="d-block mx-auto section-title-height mb-3 mb-lg-6"
+                class="d-block mx-auto section-title mb-3 mb-lg-6"
                 viewBox="0 0 236 58"
                 fill="var(--bs-dark)"
               ></SectionTitle>
@@ -51,12 +51,12 @@
                     class="vstack align-items-center py-5 px-7 border border-3 rounded-3 h-100"
                   >
                     <p class="fs-7 fs-md-5 fw-bold mb-0">{{ value }}</p>
-                    <p class="mb-1 fs-4 fw-bolder text-primary">NT${{ key }}</p>
+                    <p class="mb-1 fs-4 fw-bolder text-primary">NT${{ numSeparator(key) }}</p>
                     <p class="mb-0 fs-9">已有 1000 人贊助</p>
                     <input type="radio" name="fundAmount" class="d-none" :value="key" />
                   </label>
                 </div>
-                <div class="col">
+                <div class="col col-md-12">
                   <label
                     for="radioInput"
                     :class="fundType === '' ? 'border-primary' : 'border-light-1'"
@@ -131,17 +131,23 @@ const fundType = ref(null);
 const customAmount = ref('');
 const numberInput = ref(null);
 
-watch([fundFormShow, fundType], ([newShow, newFundType]) => {
-  if (newFundType === '' && numberInput.value) {
-    numberInput.value.focus();
-  }
-  if (newShow || newFundType) {
-    customAmount.value = '';
-  }
-  if (!newShow) {
-    fundType.value = null;
+watch(fundFormShow, () => {
+  if (!fundFormShow.value) {
+    fundType.value = null; // 初始化 focus 狀態
   }
 });
+
+watch(fundType, (newFundType, oldFundType) => {
+  if (newFundType === '' && numberInput.value) {
+    numberInput.value.focus(); // 自訂金額 radio、input 選取連動
+  }
+
+  if (oldFundType === '') {
+    customAmount.value = '';
+  }
+});
+
+const numSeparator = (num) => num.replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, '$&,');
 
 const emit = defineEmits(['showModal']);
 function submitHandler(e) {
@@ -149,7 +155,6 @@ function submitHandler(e) {
   const inputObject = Object.fromEntries(formData);
 
   if (!inputObject.fundAmount) {
-    // eslint-disable-next-line default-case
     switch (fundType.value) {
       case null:
         alert('請選擇一個捐款方案');
@@ -163,7 +168,7 @@ function submitHandler(e) {
 
   emit('showModal', 'fund', {
     title: projects[inputObject.fundAmount] || '喵星人',
-    amount: inputObject.fundAmount,
+    amount: numSeparator(inputObject.fundAmount),
   });
   fundFormShow.value = false;
 }

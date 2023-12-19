@@ -1,13 +1,13 @@
 <template>
   <div class="bg-primary">
     <div class="container pt-8 pb-50">
-      <SectionTitle class="d-block mx-auto section-title-height mb-9" fill="var(--bs-light)" viewBox="0 0 236 57"></SectionTitle>
+      <SectionTitle class="d-block mx-auto section-title mb-9" fill="var(--bs-light)" viewBox="0 0 236 57"></SectionTitle>
       <div class="row gy-7" ref="policyCardRow">
         <div class="col-lg-4" v-for="(card, idx) in policyCardData" :key="card.num">
           <div class="bg-light p-5 rounded-3 vstack h-100 card-max-height" :class="idx % 2 ? 'mt-lg-9' : 'mb-lg-9'"
-            @mouseenter="cardHoverToggle" @mouseleave="cardHoverToggle">
+            @mouseenter="cardHoverToggle(idx)" @mouseleave="cardHoverToggle(idx)">
             <Transition name="fade" @after-enter="setLineClamp(allOlList[idx])" @after-leave="setLineClamp(allOlList[idx])">
-              <div v-if="hide !== allOlList[idx]"
+              <div v-if="hide !== idx+1"
                 class="badge fw-medium text-light bg-secondary rounded-ts-be-3 me-auto py-1 px-2 mb-2">政策{{ card.num }}
               </div>
             </Transition>
@@ -25,6 +25,10 @@
 <script setup>
 import SectionTitle from '@/assets/images/title_policy.svg';
 import { ref, onMounted, nextTick } from 'vue';
+import { useCommonStore } from '@/stores/common';
+
+const store = useCommonStore();
+const { throttle } = store;
 
 async function setLineClamp(el) {
   const node = el;
@@ -44,27 +48,16 @@ async function setLineClamp(el) {
 
 const policyCardRow = ref(null);
 const hide = ref('');
-function cardHoverToggle(e) {
+function cardHoverToggle(idx) {
   if (policyCardRow.value.clientWidth < 960) {
     return;
   }
-
-  const card = e.target;
-  const targetOl = card.querySelector('.line-clamp');
-  hide.value = hide.value ? '' : targetOl;
+  hide.value = hide.value ? '' : idx + 1;
 }
 
 const allOlList = ref([]);
 function allLineClampSet() {
   allOlList.value.forEach((ol) => setLineClamp(ol));
-}
-
-function throttle(f, delay = 500) {
-  let timer = null;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => f.apply(this, args), delay);
-  };
 }
 
 const policyRowWidthObserver = new ResizeObserver(throttle((entries) => {
