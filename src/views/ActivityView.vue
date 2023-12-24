@@ -1,8 +1,8 @@
 <template>
-  <div class="container-lg gx-lg-8 pb-7 pb-lg-50">
-    <SectionTitle class="d-block mx-auto section-title mb-9" fill="var(--bs-dark)" viewBox="0 0 237 57"></SectionTitle>
+  <div ref="ActivityView" class="container-lg gx-lg-8 pb-7 pb-lg-50">
+    <SectionTitle class="animate-col d-block mx-auto section-title mb-9" fill="var(--bs-dark)" viewBox="0 0 237 57"></SectionTitle>
     <!-- static layout -->
-    <div class="row flex-nowrap d-none d-lg-flex">
+    <div class="animate-col row flex-nowrap d-none d-lg-flex">
       <div class="col-5">
         <div class="bg-light d-flex flex-column rounded-3 overflow-hidden h-100">
           <div class="overflow-hidden position-relative" style="max-height: 325px;">
@@ -38,15 +38,47 @@
       </div>
     </div>
     <!-- slider -->
-    <ActivitySlider class="d-lg-none"></ActivitySlider>
+    <ActivitySlider class="animate-col d-lg-none"></ActivitySlider>
   </div>
 </template>
 
 <script setup>
 import SectionTitle from '@/assets/images/title_activity.svg';
 import ActivitySlider from '@/components/ActivitySlider.vue';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useCommonStore } from '@/stores/common';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const ActivityView = ref(null);
+onMounted(() => {
+  const mm = gsap.matchMedia(ActivityView.value);
+  const breakPoint = 992;
+
+  mm.add(
+    {
+      isDesktop: `(min-width: ${breakPoint}px)`,
+      isMobile: `(max-width: ${breakPoint - 1}px)`,
+    },
+    (context) => {
+      const { isDesktop } = context.conditions;
+      const cols = context.selector('.animate-col');
+      const tl = gsap.timeline({
+        defaults: { opacity: 0 },
+        scrollTrigger: {
+          trigger: ActivityView.value,
+          start: 'top bottom',
+          end: isDesktop ? 'top bottom-=25%' : null,
+          scrub: isDesktop ? 1 : null,
+        },
+      });
+      tl.from(cols[0], { y: isDesktop ? 100 : 50 })
+        .from(cols[isDesktop ? 1 : 2], { y: isDesktop ? 100 : 25 }, '<50%');
+    },
+  );
+});
 
 const store = useCommonStore();
 const { getImgUrl, getDate } = store;

@@ -1,10 +1,11 @@
 <template>
-  <div class="bg-image">
+  <div  ref="FundView" class="bg-image">
     <div class="container py-50">
       <div class="row">
-        <div class="col-lg-8 col-xl-7">
-          <div class="bg-light rounded-80 p-9 d-flex" style="min-height: 465px">
-            <div v-if="!fundFormShow && modalHidden" class="text-center my-auto">
+        <div class="animate-col col-lg-8 col-xl-7">
+          <div class="card-container bg-light rounded-80 p-9 d-flex" style="min-height: 465px" :style="{'transform': `rotateY(${fundFormShow ? 180 : 0}deg)`}">
+            <!-- card front -->
+            <div v-if="modalHidden && !fundFormShow" class="text-center card-front my-auto">
               <SectionTitle
                 class="d-block mx-auto section-title mb-3 mb-lg-6"
                 viewBox="0 0 236 58"
@@ -23,7 +24,6 @@
               <SumAmount
                 class="w-100 mb-7"
                 viewBox="0 0 614 59"
-                height="100%"
                 fill="var(--bs-primary)"
               ></SumAmount>
               <ButtonComponent
@@ -39,66 +39,69 @@
                 >前往捐款</ButtonComponent
               >
             </div>
-            <form v-else @submit.prevent="submitHandler" class="my-auto">
-              <h4 class="fs-5 fs-lg-4 fw-bold mb-3 text-center">
-                選擇捐款方案
-              </h4>
-              <div class="row g-3 text-nowrap">
-                <div class="col" v-for="(value, key) in projects" :key="key">
-                  <label
-                    :class="fundType === value ? 'border-primary' : 'border-light-1'"
-                    @click="fundType = value"
-                    class="vstack align-items-center py-5 px-7 border border-3 rounded-3 h-100"
-                  >
-                    <p class="fs-7 fs-md-5 fw-bold mb-0">{{ value }}</p>
-                    <p class="mb-1 fs-4 fw-bolder text-primary">NT${{ numSeparator(key) }}</p>
-                    <p class="mb-0 fs-9">已有 1000 人贊助</p>
-                    <input type="radio" name="fundAmount" class="d-none" :value="key" />
-                  </label>
+            <!-- card back -->
+            <form v-if="fundFormShow" @submit.prevent="submitHandler" class="card-back">
+              <div class="my-auto">
+                <h4 class="fs-5 fs-lg-4 fw-bold mb-3 text-center">
+                  選擇捐款方案
+                </h4>
+                <div class="row g-3 text-nowrap">
+                  <div class="col" v-for="(value, key) in projects" :key="key">
+                    <label
+                      :class="fundType === value ? 'border-primary' : 'border-light-1'"
+                      @click="fundType = value"
+                      class="vstack align-items-center py-5 px-7 border border-3 rounded-3 h-100"
+                    >
+                      <p class="fs-7 fs-md-5 fw-bold mb-0">{{ value }}</p>
+                      <p class="mb-1 fs-4 fw-bolder text-primary">NT${{ numSeparator(key) }}</p>
+                      <p class="mb-0 fs-9">已有 1000 人贊助</p>
+                      <input type="radio" name="fundAmount" class="d-none" :value="key" />
+                    </label>
+                  </div>
+                  <div class="col col-md-12">
+                    <label
+                      for="radioInput"
+                      :class="fundType === '' ? 'border-primary' : 'border-light-1'"
+                      @click="fundType = ''"
+                      class="vstack align-items-center py-5 px-7 border border-3 rounded-3 h-100"
+                    >
+                      <p class="fs-7 fs-md-5 fw-bold mb-1">自訂捐款金額</p>
+                      <input
+                        class="form-control flex-grow-1 bg-light"
+                        type="number"
+                        placeholder="請輸入捐款金額"
+                        v-model="customAmount"
+                        ref="numberInput"
+                      />
+                      <input id="radioInput" type="radio" name="fundAmount" :value="customAmount" class="d-none" :checked="fundType === ''" />
+                    </label>
+                  </div>
                 </div>
-                <div class="col col-md-12">
-                  <label
-                    for="radioInput"
-                    :class="fundType === '' ? 'border-primary' : 'border-light-1'"
-                    @click="fundType = ''"
-                    class="vstack align-items-center py-5 px-7 border border-3 rounded-3 h-100"
+                <div class="hstack flex-wrap justify-content-center">
+                  <ButtonComponent
+                    @click="fundFormShow = false"
+                    class="mt-3 px-9 py-5 py-xl-7 me-3 text-nowrap"
+                    v-bind="{
+                      btnTarget: null,
+                      btnColor: 'light',
+                      iconShow: false,
+                      iconSizeClass: ['icon-30', 'icon-xl-40'],
+                      fontSize: ['fs-5', 'fs-xl-3']
+                    }"
+                    >返回</ButtonComponent
                   >
-                    <p class="fs-7 fs-md-5 fw-bold mb-1">自訂捐款金額</p>
-                    <input
-                      class="form-control flex-grow-1 bg-light"
-                      type="number"
-                      placeholder="請輸入捐款金額"
-                      v-model="customAmount"
-                      ref="numberInput"
-                    />
-                    <input id="radioInput" type="radio" name="fundAmount" :value="customAmount" class="d-none" :checked="fundType === ''" />
-                  </label>
+                  <button
+                    type="submit"
+                    class="btn btn-primary border-primary border-3 fw-bold rounded-pill shadow-none mt-3 px-9 py-5 py-xl-7 text-nowrap fs-5 fs-xl-3"
+                  >
+                    <iconPay
+                      class="me-2"
+                      viewBox="0 0 40 40"
+                      fill="var(--bs-light)"
+                    ></iconPay>
+                    我要捐款
+                  </button>
                 </div>
-              </div>
-              <div class="hstack flex-wrap justify-content-center">
-                <ButtonComponent
-                  @click="fundFormShow = false"
-                  class="mt-3 px-9 py-5 py-xl-7 me-3 text-nowrap"
-                  v-bind="{
-                    btnTarget: null,
-                    btnColor: 'light',
-                    iconShow: false,
-                    iconSizeClass: ['icon-30', 'icon-xl-40'],
-                    fontSize: ['fs-5', 'fs-xl-3']
-                  }"
-                  >返回</ButtonComponent
-                >
-                <button
-                  type="submit"
-                  class="btn btn-primary border-primary border-3 fw-bold rounded-pill shadow-none mt-3 px-9 py-5 py-xl-7 text-nowrap fs-5 fs-xl-3"
-                >
-                  <iconPay
-                    class="me-2"
-                    viewBox="0 0 40 40"
-                    fill="var(--bs-light)"
-                  ></iconPay>
-                  我要捐款
-                </button>
               </div>
             </form>
           </div>
@@ -114,7 +117,30 @@ import SubTitle from '@/assets/images/title_fund_sum.svg';
 import SumAmount from '@/assets/images/fund_sum.svg';
 import iconPay from '@/assets/images/icon_pay.svg';
 import ButtonComponent from '@/components/ButtonComponent.vue';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const FundView = ref(null);
+let tl;
+
+onMounted(() => {
+  gsap.context((self) => {
+    const cols = self.selector('.animate-col');
+    tl = gsap.timeline({
+      defaults: { opacity: 0 },
+      scrollTrigger: {
+        trigger: FundView.value,
+        start: 'top bottom',
+        end: 'top bottom-=200px',
+        scrub: 0.5,
+      },
+    });
+    tl.from(cols[0], { y: 100 });
+  }, FundView.value);
+});
 
 const projects = {
   600: '喵星人之友',
@@ -122,7 +148,7 @@ const projects = {
   60000: '喵星傳奇',
 };
 
-defineProps({
+const props = defineProps({
   modalHidden: Boolean,
 });
 
@@ -130,6 +156,10 @@ const fundFormShow = ref(false);
 const fundType = ref(null);
 const customAmount = ref('');
 const numberInput = ref(null);
+
+watch(() => props.modalHidden, () => {
+  fundFormShow.value = !props.modalHidden;
+});
 
 watch(fundFormShow, () => {
   if (!fundFormShow.value) {
@@ -170,11 +200,22 @@ function submitHandler(e) {
     title: projects[inputObject.fundAmount] || '喵星人',
     amount: numSeparator(inputObject.fundAmount),
   });
-  fundFormShow.value = false;
 }
 </script>
 
 <style scoped>
+.card-container {
+  transform-style: preserve-3d;
+  transition: transform .5s;
+}
+.card-front, .card-back {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.card-back {
+  transform: rotateY(180deg);
+}
+
 .subtitle-width {
   width: 125px;
 }

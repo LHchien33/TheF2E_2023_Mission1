@@ -1,6 +1,6 @@
 <template>
-  <div class="container section-padding">
-    <div class="row">
+  <div ref="ServiceView" class="container section-padding">
+    <div class="animate-col row">
       <div class="col-lg-7 text-center">
         <SectionTitle class="d-block mx-auto section-title mb-7" fill="var(--bs-dark)" viewBox="0 0 356 58">
         </SectionTitle>
@@ -34,6 +34,28 @@
 
 <script setup>
 import SectionTitle from '@/assets/images/title_service.svg';
+import { ref, onMounted } from 'vue';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const ServiceView = ref(null);
+onMounted(() => {
+  gsap.context((self) => {
+    const cols = self.selector('.animate-col');
+    const tl = gsap.timeline({
+      defaults: { opacity: 0 },
+      scrollTrigger: {
+        trigger: ServiceView.value,
+        start: 'top bottom',
+        end: 'top bottom-=200px',
+        scrub: 1,
+      },
+    });
+    tl.from(cols[0], { y: 100 });
+  }, ServiceView.value);
+});
 
 const emit = defineEmits(['showModal']);
 function submitHandler(e) {

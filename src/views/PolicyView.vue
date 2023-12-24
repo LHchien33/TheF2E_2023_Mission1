@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-primary">
+  <div ref="PolicyView" class="bg-primary">
     <div class="container pt-8 pb-50">
-      <SectionTitle class="d-block mx-auto section-title mb-9" fill="var(--bs-light)" viewBox="0 0 236 57"></SectionTitle>
+      <SectionTitle class="animate-col d-block mx-auto section-title mb-9" fill="var(--bs-light)" viewBox="0 0 236 57"></SectionTitle>
       <div class="row gy-7" ref="policyCardRow">
         <div class="col-lg-4" v-for="(card, idx) in policyCardData" :key="card.num">
-          <div class="bg-light p-5 rounded-3 vstack h-100 card-max-height" :class="idx % 2 ? 'mt-lg-9' : 'mb-lg-9'"
+          <div class="animate-col bg-light p-5 rounded-3 vstack h-100 card-max-height" :class="idx % 2 ? 'mt-lg-9' : 'mb-lg-9'"
             @mouseenter="cardHoverToggle(idx)" @mouseleave="cardHoverToggle(idx)">
             <Transition name="fade" @after-enter="setLineClamp(allOlList[idx])" @after-leave="setLineClamp(allOlList[idx])">
               <div v-if="hide !== idx+1"
@@ -26,6 +26,50 @@
 import SectionTitle from '@/assets/images/title_policy.svg';
 import { ref, onMounted, nextTick } from 'vue';
 import { useCommonStore } from '@/stores/common';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const PolicyView = ref(null);
+onMounted(() => {
+  const mm = gsap.matchMedia(PolicyView.value);
+  const breakPoint = 992;
+
+  // 992 以上，整列觸發
+  mm.add(`(min-width: ${breakPoint}px)`, (context) => {
+    const cols = context.selector('.animate-col');
+    const tl = gsap.timeline({
+      defaults: { opacity: 0 },
+      scrollTrigger: {
+        trigger: PolicyView.value,
+        start: 'top bottom',
+        end: 'top bottom-=200px',
+        scrub: 1,
+      },
+    });
+    tl.from(cols[0], { y: 100 })
+      .from([cols[1], cols[3]], { y: -50 })
+      .from(cols[2], { y: 50 }, '<');
+  });
+
+  // 992 以下，個別觸發
+  mm.add(`(max-width: ${breakPoint - 1}px)`, (context) => {
+    const cols = context.selector('.animate-col');
+    cols.forEach((col) => {
+      gsap.from(col, {
+        y: 50,
+        opacity: 0,
+        scrollTrigger: {
+          trigger: col,
+          start: 'top bottom',
+          end: 'top bottom-=50px',
+          scrub: 1,
+        },
+      });
+    });
+  });
+});
 
 const store = useCommonStore();
 const { throttle } = store;
