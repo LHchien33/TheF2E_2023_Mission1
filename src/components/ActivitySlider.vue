@@ -24,7 +24,7 @@
                 :class="idx === 0 ? null : ['fs-2', 'lh-1']">{{ d }}<span v-if="idx === 0">.</span></div>
           </div>
           <!-- image -->
-          <img :src="getImgUrl(card.image)" alt="活動圖片" class="w-100 h-100 object-fit-cover">
+          <img :src="getJpgImg(card.image)" alt="活動圖片" class="w-100 h-100 object-fit-cover">
         </div>
         <!-- content -->
         <div class="p-5 triangle" style="height: 180px;" ref="contentArray">
@@ -46,7 +46,7 @@ import { useCommonStore } from '@/stores/common';
 swiper.register();
 
 const store = useCommonStore();
-const { getImgUrl, getDate, throttle } = store;
+const { getJpgImg, getDate, throttle } = store;
 const cardData = computed(() => store.cardsData);
 const contentArray = ref([]);
 

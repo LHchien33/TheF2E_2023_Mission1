@@ -10,7 +10,7 @@
               <div v-for="(d, idx) in getDate(cardData[0].date, 'part')" :key="d" class="mx-auto"
                     :class="idx === 0 ? null : ['fs-2', 'lh-1']">{{ d }}<span v-if="idx === 0">.</span></div>
             </div>
-            <img :src="getImgUrl(cardData[0].image)" alt="活動圖片" class="w-100 h-100 object-fit-cover">
+            <img :src="getJpgImg(cardData[0].image)" alt="活動圖片" class="w-100 h-100 object-fit-cover">
           </div>
           <div class="p-5 triangle">
             <h4 class="fs-4 fw-bold mb-3">{{ cardData[0].title }}</h4>
@@ -23,7 +23,7 @@
           <div v-if="idx !== 0" class="py-3">
             <div class="bg-light d-flex flex-row rounded-3 overflow-hidden h-100">
               <div class="overflow-hidden position-relative" style="flex: 1 0 276px;">
-                <img :src="getImgUrl(card.image)" alt="活動圖片" class="w-100 h-100 object-fit-cover">
+                <img :src="getJpgImg(card.image)" alt="活動圖片" class="w-100 h-100 object-fit-cover">
               </div>
               <div class="p-5">
                 <div class="d-inline-block fw-medium text-light bg-secondary rounded-ts-be-3 py-1 px-2 mb-2">
@@ -81,7 +81,7 @@ onMounted(() => {
 });
 
 const store = useCommonStore();
-const { getImgUrl, getDate } = store;
+const { getJpgImg, getDate } = store;
 const cardData = computed(() => store.cardsData);
 </script>
 
