@@ -6,13 +6,13 @@
         <div class="col-lg-4" v-for="(card, idx) in policyCardData" :key="card.num">
           <div class="animate-col bg-light p-5 rounded-3 vstack h-100 card-max-height" :class="idx % 2 ? 'mt-lg-9' : 'mb-lg-9'"
             @mouseenter="cardHoverToggle(idx)" @mouseleave="cardHoverToggle(idx)">
-            <Transition name="fade" @after-enter="setLineClamp(allOlList[idx])" @after-leave="setLineClamp(allOlList[idx])">
+            <Transition name="fade" @after-enter="setLineClamp(idx)" @after-leave="setLineClamp(idx)">
               <div v-if="hide !== idx+1"
                 class="badge fw-medium text-light bg-secondary rounded-ts-be-3 me-auto py-1 px-2 mb-2">政策{{ card.num }}
               </div>
             </Transition>
             <h3 class="fs-5 fs-lg-4 fw-bold mb-3">{{ card.title }}</h3>
-            <ol class="ps-7 fs-8 fs-xl-7 fw-medium flex-grow-1 line-clamp" :ref="(el) => allOlList.push(el)">
+            <ol class="ps-7 fs-8 fs-xl-7 fw-medium flex-grow-1 line-clamp" :ref="(el) => allOlList.push(el)" :style="olStyle[idx]">
               <li v-for="(item, itemIdx) in card.list" :key="item[0] + itemIdx">{{ item }}</li>
             </ol>
           </div>
@@ -74,22 +74,6 @@ onMounted(() => {
 const store = useCommonStore();
 const { throttle } = store;
 
-async function setLineClamp(el) {
-  const node = el;
-  // init first
-  node.style.webkitLineClamp = 'unset';
-  node.style.marginBottom = '0px';
-
-  await nextTick();
-
-  const { clientHeight } = node;
-  const lineHeight = window.getComputedStyle(node).lineHeight.replace('px', '');
-  const maxLines = Math.floor(clientHeight / lineHeight);
-  const viewH = maxLines * lineHeight;
-  node.style.webkitLineClamp = `${maxLines}`;
-  node.style.marginBottom = `${clientHeight - viewH}px`;
-}
-
 const policyCardRow = ref(null);
 const hide = ref('');
 function cardHoverToggle(idx) {
@@ -100,13 +84,32 @@ function cardHoverToggle(idx) {
 }
 
 const allOlList = ref([]);
-function allLineClampSet() {
-  allOlList.value.forEach((ol) => setLineClamp(ol));
+const olStyle = ref([]);
+async function setLineClamp(idx) {
+  const el = allOlList.value[idx];
+
+  // init first
+  olStyle.value[idx] = {
+    webkitLineClamp: 'unset',
+    marginBottom: '0px',
+  };
+
+  await nextTick();
+
+  const { clientHeight } = el;
+  const lineHeight = window.getComputedStyle(el).lineHeight.replace('px', '');
+  const maxLines = Math.floor(clientHeight / lineHeight);
+  const viewH = maxLines * lineHeight;
+
+  olStyle.value[idx] = {
+    webkitLineClamp: `${maxLines}`,
+    marginBottom: `${clientHeight - viewH}px`,
+  };
 }
 
 const policyRowWidthObserver = new ResizeObserver(throttle((entries) => {
   if (entries[0].contentRect.width >= 960) {
-    allLineClampSet();
+    allOlList.value.forEach((ol, idx) => setLineClamp(idx));
   }
 }));
 

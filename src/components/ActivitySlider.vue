@@ -15,7 +15,7 @@
     coverflow-effect-slide-shadows="false"
     coverflow-effect-stretch="-25"
   >
-    <swiper-slide v-for="card in cardData" :key="card.id" class="h-auto d-flex">
+    <swiper-slide v-for="(card, cardIdx) in cardData" :key="card.id" class="h-auto d-flex">
       <div class="bg-light rounded-3 position-relative overflow-hidden d-flex flex-column">
         <div class="overflow-hidden image-height">
           <!-- date badge -->
@@ -27,9 +27,9 @@
           <img :src="getJpgImg(card.image)" alt="活動圖片" class="w-100 h-100 object-fit-cover">
         </div>
         <!-- content -->
-        <div class="p-5 triangle" style="height: 180px;" ref="contentArray">
+        <div class="p-5 triangle" style="height: 180px;" :ref="(el) => contentArray.push(el)">
           <h4 class="fs-5 fw-bold mb-0 pb-3">{{ card.title }}</h4>
-          <p class="fs-8 fw-medium mb-0 h-auto line-clamp">{{ card.content }}</p>
+          <p class="fs-8 fw-medium mb-0 h-auto line-clamp" :style="contentStyle[cardIdx]">{{ card.content }}</p>
         </div>
       </div>
     </swiper-slide>
@@ -49,26 +49,29 @@ const store = useCommonStore();
 const { getJpgImg, getDate, throttle } = store;
 const cardData = computed(() => store.cardsData);
 const contentArray = ref([]);
+const contentStyle = ref([]);
 
-async function setLineClamp(el) {
-  const node = el;
+async function setLineClamp(idx) {
+  const el = contentArray.value[idx];
   // init first
-  node.childNodes[1].style.webkitLineClamp = 'unset';
+  contentStyle.value[idx] = { webkitLineClamp: 'unset' };
 
   await nextTick();
 
-  let { padding, lineHeight } = window.getComputedStyle(node);
+  let { padding, lineHeight } = window.getComputedStyle(el);
   padding = padding.replace('px', '');
   lineHeight = lineHeight.replace('px', '');
 
-  const viewH = node.clientHeight - node.childNodes[0].clientHeight - padding * 2;
+  const viewH = el.clientHeight - el.childNodes[0].clientHeight - padding * 2;
   const maxLines = Math.floor(viewH / lineHeight);
-  node.childNodes[1].style.webkitLineClamp = `${maxLines}`;
+  contentStyle.value[idx] = { webkitLineClamp: `${maxLines}` };
 }
 
 const swiperContainer = ref();
-const swiperContainerObserver = new ResizeObserver(throttle(() => {
-  contentArray.value.forEach((el) => setLineClamp(el));
+const swiperContainerObserver = new ResizeObserver(throttle((entries) => {
+  if (entries[0].contentRect.width !== 0) {
+    contentArray.value.forEach((el, idx) => setLineClamp(idx));
+  }
 }));
 
 onMounted(() => {

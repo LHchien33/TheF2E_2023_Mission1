@@ -10,12 +10,12 @@
           <IconHamburgerMenu></IconHamburgerMenu>
         </button>
         <div class="offcanvas-xl offcanvas-end text-bg-primary ms-xl-auto" tabindex="-1" id="offcanvasRight"
-          ref="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+          ref="offcanvasRef" aria-labelledby="offcanvasRightLabel">
           <div class="offcanvas-header px-5 py-6" data-bs-theme="dark">
             <div class="offcanvas-title" id="offcanvasRightLabel">
               <Logo class="logo-width" viewBox="0 0 236 59" fill="var(--bs-light)"></Logo>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasRight"
+            <button type="button" class="btn-close" @click="offcanvasRight.hide()"
               aria-label="Close"></button>
           </div>
           <nav class="offcanvas-body px-5 px-xl-0 py-0">
@@ -46,35 +46,46 @@ import ButtonComponent from '@/components/ButtonComponent.vue';
 import IconHamburgerMenu from '@/assets/images/icon_hamburgerMenu.svg';
 import Logo from '@/assets/images/logo.svg';
 import { useCommonStore } from '@/stores/common';
+import { Offcanvas } from 'bootstrap';
 
 const store = useCommonStore();
 const navItems = computed(() => store.navItems);
 
-const offcanvasRight = ref(null);
+const offcanvasRef = ref(null);
+const offcanvasRight = ref({});
 const fundBtnColor = ref('primary');
 
 onMounted(() => {
-  offcanvasRight.value.addEventListener('show.bs.offcanvas', () => {
+  offcanvasRight.value = new Offcanvas(offcanvasRef.value);
+  offcanvasRef.value.addEventListener('show.bs.offcanvas', () => {
     fundBtnColor.value = 'light';
   });
-  offcanvasRight.value.addEventListener('hidden.bs.offcanvas', () => {
+  offcanvasRef.value.addEventListener('hidden.bs.offcanvas', () => {
     fundBtnColor.value = 'primary';
   });
 });
 
 function scrollHandler(e) {
   let { target } = e;
+  let destination;
 
-  while (target && target.tagName !== 'A') {
-    target = target.parentNode;
+  if (e.target.innerText) {
+    destination = `#${e.target.innerText}`;
+  } else {
+    // 點到 icon 時
+    while (target && target.tagName !== 'A') {
+      target = target.parentNode;
+    }
+    destination = target.getAttribute('href');
   }
 
-  if (target && target.tagName === 'A') {
-    const destination = target.getAttribute('href');
-    const offsetTop = document.querySelector(destination)?.offsetTop || 0;
-    window.scrollTo({
-      top: offsetTop - 100,
-    });
+  const offsetTop = document.querySelector(destination)?.offsetTop || 0;
+  window.scrollTo({
+    top: offsetTop - 100,
+  });
+
+  if (offcanvasRef.value.classList.contains('show')) {
+    offcanvasRight.value.hide();
   }
 }
 </script>
